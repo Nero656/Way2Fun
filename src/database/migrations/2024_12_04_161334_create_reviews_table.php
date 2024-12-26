@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+
+            $table->integer('rating'); // Rating out of 5
+
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('activity_id');
+            $table->text('comment')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')
+                ->on('users')->onDelete('cascade');
+            $table->foreign('activity_id')->references('id')
+                ->on('activities')->onDelete('cascade');
         });
     }
 
