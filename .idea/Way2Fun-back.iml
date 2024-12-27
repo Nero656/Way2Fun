@@ -26,6 +26,11 @@
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/league/uri-interfaces" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/staabm/side-effects-detector" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/laravel/sanctum" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/lcobucci/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/tymon/jwt-auth" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/intervention/gif" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/intervention/image" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

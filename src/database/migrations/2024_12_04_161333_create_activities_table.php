@@ -19,17 +19,18 @@ return new class extends Migration
             $table->float('price');
             $table->integer('duration'); // Duration in minutes
             $table->integer('capacity'); // Maximum participants
-            $table->unsignedInteger('booking_id');
+
             $table->unsignedInteger('guide_id');
             $table->unsignedInteger('city_id');
             $table->unsignedInteger('category_id');
             $table->timestamps();
 
-            $table->foreign('booking_id')->references('id')
-                ->on('bookings')->onDelete('cascade');
-            $table->foreign('guide_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('guide_id')->references('id')
+                ->on('users')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')
+                ->on('cities')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')
+                ->on('categories')->onDelete('cascade');
         });
     }
 

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Activity;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Activity;
 
 class ReadActivityController extends Controller
 {
-    //
+    public function index(){
+        return Activity::all();
+    }
 }

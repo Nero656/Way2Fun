@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Image;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class CreateUserController extends Controller
+class DeleteController extends Controller
 {
     //
 }

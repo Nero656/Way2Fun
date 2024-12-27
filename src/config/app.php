@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+//    'providers' => [
+//        /*
+//         * Package Service Providers...
+//         */
+//        Intervention\ImageUploader\ImageServiceProvider::class,
+//    ],
+//
+//    'aliases' => [
+//        'ImageUploader' => Intervention\ImageUploader\Facades\ImageUploader::class,
+//    ],
+
 ];

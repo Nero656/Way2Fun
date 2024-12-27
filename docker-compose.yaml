@@ -19,8 +19,8 @@ services:
       dockerfile: php.Dockerfile
     volumes:
       - ./src:/var/www/laravel
-
   postgres:
+    container_name: psg
     image: postgres:17.1-alpine
     ports:
       - 5432:5432
@@ -29,7 +29,6 @@ services:
     volumes:
       - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ~/apps/postgresql:/var/lib/postgresql/data
-
   composer:
     build:
       context: dockerfiles
@@ -43,6 +42,5 @@ services:
     volumes:
       - ./src:/var/www/laravel
     entrypoint: ["php", "/var/www/laravel/artisan"]
-
 volumes:
   db_data:
