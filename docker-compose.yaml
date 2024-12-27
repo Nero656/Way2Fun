@@ -21,6 +21,7 @@ services:
       - ./src:/var/www/laravel
 
   postgres:
+    container_name: psg
     image: postgres:17.1-alpine
     ports:
       - 5432:5432
