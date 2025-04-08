@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "caouecs/laravel-lang": "*"
+    }
+}
