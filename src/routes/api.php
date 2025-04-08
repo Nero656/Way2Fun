@@ -141,7 +141,6 @@ Route::prefix('activities')->group(function () {
 
     Route::get('/category/{category}', [ActivityListController::class, 'index']);
     Route::get('/city/{city}', [ActivityListController::class, 'cityList']);
-
     Route::get('/select/{category}', [ActivityListController::class, 'show']);
     Route::post('/search', [ShowFoundActivity::class, 'index']);
     Route::get('/activity/{activity}', [ShowActivityController::class, 'index']);
