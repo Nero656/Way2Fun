@@ -8,8 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class CurrentUserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return auth()->user()->load('booking');
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Ошибка авторизации'], 401);
+        }
+
+        return response()->json($user->load('booking', 'role'));
     }
 }

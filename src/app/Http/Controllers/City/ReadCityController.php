@@ -9,6 +9,6 @@ use Illuminate\Http\Request;
 class ReadCityController extends Controller
 {
     public function index(){
-        return City::all();
+        return City::all()->load('images');
     }
 }

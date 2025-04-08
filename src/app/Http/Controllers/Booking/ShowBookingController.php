@@ -13,8 +13,6 @@ class ShowBookingController extends Controller
     {
         $booking->load( 'user', 'activity');
 
-//        return response()->json($booking);
-
         return response()->json(
             $booking
         );

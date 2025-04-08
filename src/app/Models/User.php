@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use function Symfony\Component\Translation\t;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -33,8 +34,10 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
+    const ROLE_GUIDE = 3;
     /**
      * Get the attributes that should be cast.
      *
@@ -61,12 +64,13 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public static function login($request){
+
         $user = $request->only('email', 'password');
 
         if (!$token = auth()->attempt($user)) {
+
             return response()->json(['error' => 'Ошибка, пароль или email не верен'], 401);
         }
-
         return self::respondWithToken($token);
     }
 
@@ -83,10 +87,19 @@ class User extends Authenticatable implements JWTSubject
         return response()->json(['Вы обновили роль' => $role->update(array_merge($request->all(), $update))]);
     }
 
+    public static function guideList()
+    {
+
+        return response(
+            self::where('role_id', User::ROLE_GUIDE)->get()
+        )->setStatusCode(201);
+    }
+
     public function logout(){
         Auth::user()->logout();
 
-        return response()->json(['response' => "Вы успешно вышли из системы"]);
+        return response()->json(['response' => "Вы успешно вышли из системы"])
+            ->cookie('access_token', '', -1);
     }
 
     // Добавьте эти методы:
@@ -113,5 +126,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Booking::class, 'user_id');
     }
-
+    public function role()
+    {
+        return $this->hasMany(User::class, 'role_id');
+    }
 }

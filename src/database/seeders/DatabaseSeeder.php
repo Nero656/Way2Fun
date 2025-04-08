@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             ActivitySeeder::class,
             BookingSeeder::class,
             ReviewSeeder::class,
+            ActivityDateSeeder::class,
+            AddressSeeder::class
         ]);
     }
 }

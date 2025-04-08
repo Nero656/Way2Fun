@@ -1,8 +1,7 @@
 <?php
 
 
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\GuidesListController;
 use Illuminate\Support\Facades\Route;
 
 // Role Controllers
@@ -36,6 +35,7 @@ use App\Http\Controllers\Category\DeleteCategoryController;
 // Booking Controllers
 use App\Http\Controllers\Booking\CreateBookingController;
 use App\Http\Controllers\Booking\ReadBookingController;
+use App\Http\Controllers\Booking\UserBookingController;
 use App\Http\Controllers\Booking\UpdateBookingController;
 use App\Http\Controllers\Booking\DeleteBookingController;
 use App\Http\Controllers\Booking\ShowBookingController;
@@ -47,6 +47,11 @@ use App\Http\Controllers\Activity\UpdateActivityController;
 use App\Http\Controllers\Activity\DeleteActivityController;
 use App\Http\Controllers\Activity\ShowActivityController;
 use App\Http\Controllers\Activity\ActivityListController;
+use App\Http\Controllers\Activity\ShowFoundActivity;
+
+//activityDate Controllers
+use App\Http\Controllers\ActivityDate\CreateActivityDateController;
+use App\Http\Controllers\ActivityDate\ReadActivityDateController;
 
 // Review Controllers
 use App\Http\Controllers\Review\CreateReviewController;
@@ -56,6 +61,7 @@ use App\Http\Controllers\Review\DeleteReviewController;
 
 //chat
 use App\Http\Controllers\Chat\ChatController;
+use App\Http\Controllers\Chat\ChatListController;
 use App\Http\Controllers\Chat\GetMessageController;
 use App\Http\Controllers\Chat\SendMessageController;
 
@@ -63,15 +69,23 @@ use App\Http\Controllers\Chat\SendMessageController;
 use App\Http\Controllers\Image\CreateImageController;
 use App\Http\Controllers\Image\ReadImageController;
 
+//carts
+use App\Http\Controllers\Carts\ShowCartController;
+use App\Http\Controllers\Carts\StoreCartController;
+
+//favorites
+use App\Http\Controllers\Favorites\StoreFavoriteController;
+
 // Role Routes
 Route::prefix('roles')->group(function () {
     Route::post('/', [CreateRoleController::class, 'index']);
     Route::get('/', [ReadRoleController::class, 'index']);
     Route::put('/{role}', [UpdateRoleController::class, 'index']);
-    Route::delete('/{role}', [DeleteRoleController::class,'index']);
+    Route::delete('/{role}', [DeleteRoleController::class, 'index']);
 });
 
 Route::prefix('users')->group(function () {
+    Route::get('/guides_list', [GuidesListController::class, 'index']);
 //  User CRUD
     Route::get('/{user}', [ReadUserController::class, 'index']);
     Route::put('/{user}', [UpdateUserController::class, 'index']);
@@ -79,8 +93,10 @@ Route::prefix('users')->group(function () {
     Route::prefix('/auth')->group(function () {
         Route::post('/register', [RegisterController::class, 'index']);
         Route::post('/login', [LoginController::class, 'index']);
-        Route::post('/logout', [LogoutController::class, 'index']);
-        Route::middleware('auth:api')->get('/current_user', [CurrentUserController::class, 'index']);
+        Route::middleware('jwt.auth')->group(function () {
+            Route::get('/current_user', [CurrentUserController::class, 'index']);
+            Route::post('/logout', [LogoutController::class, 'index']);
+        });
     });
 });
 
@@ -105,34 +121,74 @@ Route::prefix('bookings')->group(function () {
     Route::post('/', [CreateBookingController::class, 'index']);
     Route::get('/', [ReadBookingController::class, 'index']);
     Route::get('/{booking}', [ShowBookingController::class, 'index']);
+    Route::get('/booking/{user}', [UserBookingController::class, 'index']);
     Route::put('/{booking}', [UpdateBookingController::class, 'index']);
     Route::delete('/{booking}', [DeleteBookingController::class, 'index']);
 });
 
 // Activity Routes
 Route::prefix('activities')->group(function () {
-    Route::post('/', [CreateActivityController::class, 'index']);
     Route::get('/', [ReadActivityController::class, 'index']);
-    Route::get('/{category}', [ActivityListController::class, 'index']);
-    Route::get('/{activity}', [ShowActivityController::class, 'index']);
+    Route::middleware('jwt.auth')->group(function () {
+        Route::post('/', function (\Illuminate\Http\Request $request) {
+            if (auth()->user()->role_id == 2) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
+            return app(CreateActivityController::class)->index($request);
+        });
+        Route::delete('/{activity}', [DeleteActivityController::class, 'index']);
+    });
+
+    Route::get('/category/{category}', [ActivityListController::class, 'index']);
+    Route::get('/city/{city}', [ActivityListController::class, 'cityList']);
+
+    Route::get('/select/{category}', [ActivityListController::class, 'show']);
+    Route::post('/search', [ShowFoundActivity::class, 'index']);
+    Route::get('/activity/{activity}', [ShowActivityController::class, 'index']);
     Route::put('/{activity}', [UpdateActivityController::class, 'index']);
-    Route::delete('/{activity}', [DeleteActivityController::class, 'index']);
+});
+// Activity_date Routes
+Route::prefix('activities_dates')->group(function () {
+    Route::middleware('jwt.auth')->group(function () {
+        Route::post('/', function (\Illuminate\Http\Request $request) {
+            if (auth()->user()->role_id == 2) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
+            return app(CreateActivityController::class)->index($request);
+        });
+
+        Route::post('/', [CreateActivityDateController::class, 'index']);
+    });
+
+    Route::get('/', [ReadActivityDateController::class, 'index']);
 });
 
 // Review Routes
 Route::prefix('reviews')->group(function () {
-    Route::post('/', [CreateReviewController::class, 'index']);
+    Route::middleware('jwt.auth')->group(function () {
+        Route::post('/', [CreateReviewController::class, 'index']);
+        Route::put('/{review}', [UpdateReviewController::class, 'index']);
+    });
     Route::get('/', [ReadReviewController::class, 'index']);
-    Route::put('/{review}', [UpdateReviewController::class, 'index']);
     Route::delete('/{review}', [DeleteReviewController::class, 'index']);
 });
 
 //chats
-Route::get('/chat/{userId}/{guideId}', [ChatController::class, 'index']);
-Route::get('/messages/{chatId}', [GetMessageController::class, 'index']);
-Route::post('/message/{chatId}', [SendMessageController::class, 'index']);
-
+Route::middleware('jwt.auth')->group(function () {
+    Route::get('/chat/{userId}/{guideId}', [ChatController::class, 'index']);
+    Route::get('/chat/{userId}', [ChatListController::class, 'index']);
+    Route::get('/messages/{chatId}', [GetMessageController::class, 'index']);
+    Route::post('/message/{chatId}', [SendMessageController::class, 'index']);
+});
 //images
 Route::post('/image', [CreateImageController::class, 'index']);
 Route::get('/image/{image}', [ReadImageController::class, 'index']);
+
+//cart
+Route::get('/cart', [ShowCartController::class, 'index']);
+Route::post('/cart', [StoreCartController::class, 'index']);
+
+//favorites
+Route::post('/favorites', [StoreFavoriteController::class, 'index']);
+
 

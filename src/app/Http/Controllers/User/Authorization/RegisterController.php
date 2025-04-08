@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         return User::registration($request);
     }

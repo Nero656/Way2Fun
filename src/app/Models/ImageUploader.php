@@ -26,9 +26,9 @@ class ImageUploader extends Model
     public static function make($request){
         $validated = $request->validate([
             'file' => 'required|file|mimes:jpeg,jpg,png,gif,webp',
-            'category_id' => 'nullable|integer|exists:categories,id', // Если передано, проверим, существует ли категория
-            'city_id' => 'nullable|integer|exists:cities,id', // Если передано, проверим, существует ли город
-            'activity_id' => 'nullable|integer|exists:activities,id', // Если передано, проверим, существует ли активность
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'city_id' => 'nullable|integer|exists:cities,id',
+            'activity_id' => 'nullable|integer|exists:activities,id',
         ]);
 
         return response(
@@ -41,17 +41,6 @@ class ImageUploader extends Model
         )->setStatusCode(201);
     }
 
-    //    public static function image_url_no_resize($file)
-//    {
-//        $fileName = uniqid();
-//
-//        $image = ImageManagerStatic::make($file)
-//            ->save(storage_path('app/public/images' . $fileName . '.webp'), 100, 'webp');
-//
-//        $fileDir = 'public/';
-//
-//        return Storage::url($fileDir . $image->basename);
-//    }
 
     public static function image_url($file, $wight, $height)
     {

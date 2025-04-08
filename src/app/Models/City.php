@@ -42,4 +42,14 @@ class City extends Model
             ]
         )->setStatusCode(201);
     }
+
+    public function images()
+    {
+        return $this->hasMany(ImageUploader::class, 'city_id');
+    }
+
+    public function address()
+    {
+        return $this->hasOne(Address::class, 'city_id');
+    }
 }

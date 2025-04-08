@@ -33,12 +33,17 @@ class Review extends Model
             'rating' => ($request->name !== null) ? $request->rating : $review->rating,
             'user_id' => ($request->name !== null) ? $request->user_id : $review->user_id,
             'activity_id' => ($request->name !== null) ? $request->activity_id : $review->activity_id,
-            'comment' => ($request->name !== null) ? $request->comment : $review->comment
+            '!' => ($request->name !== null) ? $request->comment : $review->comment
         ];
 
         return response([
-                'Вы обновили город' => $review->update(array_merge($request->all(), $update))
+                'Вы обновили комментарий' => $review->update(array_merge($request->all(), $update))
             ]
         )->setStatusCode(201);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

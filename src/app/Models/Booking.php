@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
@@ -14,20 +15,44 @@ class Booking extends Model
     ];
 
     protected $dateFormat = 'd.m.Y';
+    protected $appends = ['status'];
 
-    public static function make($request){
-        return response(
-            self::create([
-                'date' => $request->date,
-                'time' => $request->time,
-                'user_id' => $request->user_id,
-            ])
-        )->setStatusCode(201);
+    public static function make($request)
+    {
+        $now = now();
+        try {
+            $inserted = self::insert(collect($request->bookings)->map(function ($booking) use ($now) {
+                return [
+                    'date' => $booking['date'],
+                    'time' => $booking['time'],
+                    'user_id' => $booking['user_id'],
+                    'activity_id' => $booking['activity_id'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            })->toArray());
+
+            if ($inserted) {
+                return response()->json([
+                    'message' => 'Бронирования успешно созданы!',
+                    'status' => true
+                ], 201);
+            } else {
+                return response()->json([
+                    'message' => 'Не удалось создать бронирования.',
+                    'status' => false
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Ошибка при создании бронирований: ' . $e->getMessage(),
+                'status' => false
+            ], 500);
+        }
     }
 
     public static function edit($booking, $request)
     {
-
         $update = [
             'date' => ($request->date !== null) ? $request->date : $booking->date,
             'time' => ($request->time !== null) ? $request->time : $booking->time,
@@ -42,16 +67,18 @@ class Booking extends Model
 
     protected $dates = ['date'];
 
-    public function getYourDateColumnAttribute($value)
+    public function getStatusAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y');
+        return Carbon::parse($this->date)->isToday() || Carbon::parse($this->date)->isFuture();
     }
 
-    public function activity(){
+    public function activity()
+    {
         return $this->belongsTo(Activity::class, 'activity_id');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 }

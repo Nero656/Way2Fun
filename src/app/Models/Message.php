@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 
 class Message extends Model
 {
@@ -11,15 +13,27 @@ class Message extends Model
 
     protected $fillable = ['chat_id', 'sender_id', 'message'];
 
-    public static function getMessage($chatId){
-        return self::where('chat_id', $chatId)->get();
+    public static function getMessage($chatId)
+    {
+        $messages = self::where('chat_id', $chatId)->with('sender')->get();
+
+        // Расшифровываем сообщения при получении
+        return $messages->map(function($message) {
+            try {
+                $message->message = Crypt::decryptString($message->message);
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                $message->message = '[Ошибка расшифровки]';
+            }
+            return $message;
+        });
     }
 
-    public static function sendMessage($request, $chatId){
+    public static function sendMessage($request, $chatId)
+    {
         return self::create([
             'chat_id' => $chatId,
             'sender_id' => $request->sender_id,
-            'message' => $request->message,
+            'message' => Crypt::encryptString($request->message),
         ]);
     }
 
