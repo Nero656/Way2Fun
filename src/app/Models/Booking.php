@@ -12,6 +12,7 @@ class Booking extends Model
         'time',
         'user_id',
         'activity_id',
+        'activity_date_id'
     ];
 
     protected $dateFormat = 'd.m.Y';
@@ -21,7 +22,27 @@ class Booking extends Model
     {
         $now = now();
         try {
-            $inserted = self::insert(collect($request->bookings)->map(function ($booking) use ($now) {
+            $bookings = collect($request->bookings);
+
+            foreach ($bookings as $booking) {
+                $seat = AvailableSeat::where('activity_id', $booking['activity_id'])
+                    ->where('activity_date_id', $booking['activity_date_id'])
+                    ->first();
+
+                // Проверка доступности
+                if (!$seat || $seat->available_seats < 1) {
+                    return response()->json([
+                        'message' => 'Недостаточно свободных мест для выбранной активности и даты.',
+                        'status' => false
+                    ], 400);
+                }
+
+                $seat->available_seats -= 1;
+                $seat->save();
+            }
+
+            // Вставка бронирований
+            $inserted = self::insert($bookings->map(function ($booking) use ($now) {
                 return [
                     'date' => $booking['date'],
                     'time' => $booking['time'],
@@ -50,6 +71,8 @@ class Booking extends Model
             ], 500);
         }
     }
+
+
 
     public static function edit($booking, $request)
     {

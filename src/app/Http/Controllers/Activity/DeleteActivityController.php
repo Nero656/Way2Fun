@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class DeleteActivityController extends Controller
 {
     public function index(Activity $activity){
-        return $activity->delete();
+        $activity->delete();
+        return ['success' => true];
     }
 }

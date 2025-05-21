@@ -101,6 +101,7 @@ class Activity extends Model
 
         return response([
                 'message' => 'Вы обновили активность',
+                'activity' => $activity,
                 'updated' => $activity->update($update)
             ]
         )->setStatusCode(201);
@@ -129,6 +130,11 @@ class Activity extends Model
     public function review()
     {
         return $this->hasMany(Review::class, 'activity_id');
+    }
+
+    public function available_seats()
+    {
+        return $this->hasMany(AvailableSeat::class, 'activity_id');
     }
 
     public function activity_date(){

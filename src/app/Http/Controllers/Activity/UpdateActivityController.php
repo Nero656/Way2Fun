@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UpdateActivityController extends Controller
 {
-    public function index(Request $request){
-        return Activity::edit($request);
+    public function index(Activity $activity, Request $request){
+        return Activity::edit($activity, $request);
     }
 }

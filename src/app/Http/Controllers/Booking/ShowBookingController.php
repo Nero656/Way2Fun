@@ -11,7 +11,7 @@ class ShowBookingController extends Controller
 {
     public function index(Booking $booking)
     {
-        $booking->load( 'user', 'activity');
+        $booking->load( 'user', 'activity.guide');
 
         return response()->json(
             $booking

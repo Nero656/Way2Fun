@@ -49,6 +49,12 @@ use App\Http\Controllers\Activity\ShowActivityController;
 use App\Http\Controllers\Activity\ActivityListController;
 use App\Http\Controllers\Activity\ShowFoundActivity;
 
+// AvailableSeats Controller
+use App\Http\Controllers\AvailableSeats\CreateAvailableSeatController;
+use App\Http\Controllers\AvailableSeats\ReadAvailableSeatController;
+use App\Http\Controllers\AvailableSeats\UpdateAvailableSeatController;
+use App\Http\Controllers\AvailableSeats\DeleteAvailableSeatController;
+
 //activityDate Controllers
 use App\Http\Controllers\ActivityDate\CreateActivityDateController;
 use App\Http\Controllers\ActivityDate\ReadActivityDateController;
@@ -90,6 +96,8 @@ Route::prefix('users')->group(function () {
     Route::get('/{user}', [ReadUserController::class, 'index']);
     Route::put('/{user}', [UpdateUserController::class, 'index']);
     // Authorization
+
+
     Route::prefix('/auth')->group(function () {
         Route::post('/register', [RegisterController::class, 'index']);
         Route::post('/login', [LoginController::class, 'index']);
@@ -136,6 +144,7 @@ Route::prefix('activities')->group(function () {
             }
             return app(CreateActivityController::class)->index($request);
         });
+        Route::put('/{activity}', [UpdateActivityController::class, 'index']);
         Route::delete('/{activity}', [DeleteActivityController::class, 'index']);
     });
 
@@ -144,7 +153,6 @@ Route::prefix('activities')->group(function () {
     Route::get('/select/{category}', [ActivityListController::class, 'show']);
     Route::post('/search', [ShowFoundActivity::class, 'index']);
     Route::get('/activity/{activity}', [ShowActivityController::class, 'index']);
-    Route::put('/{activity}', [UpdateActivityController::class, 'index']);
 });
 // Activity_date Routes
 Route::prefix('activities_dates')->group(function () {
@@ -160,6 +168,14 @@ Route::prefix('activities_dates')->group(function () {
     });
 
     Route::get('/', [ReadActivityDateController::class, 'index']);
+});
+
+//available-seats routes
+Route::prefix('available_seats')->group(function () {
+    Route::post('/', [CreateAvailableSeatController::class, 'index']);
+    Route::get('/{event_date_id}/{activity_id}', [ReadAvailableSeatController::class, 'index']);
+    Route::put('/{id}', [UpdateAvailableSeatController::class, 'index']);
+    Route::delete('/{id}', [DeleteAvailableSeatController::class, 'index']);
 });
 
 // Review Routes

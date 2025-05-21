@@ -10,6 +10,7 @@ class ShowActivityController extends Controller
     public function index(Activity $activity) {
         $activity->load([
             'city.address',
+            'available_seats',
             'guide',
             'images' => function ($query) {
                 $query->orderBy('activity_id');
